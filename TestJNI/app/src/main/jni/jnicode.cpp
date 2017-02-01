@@ -97,3 +97,25 @@ JNIEXPORT jobject JNICALL Java_com_example_admin_testjni_NativeLib_returnObjectT
 
     return jPoint;
 }
+
+extern "C"
+JNIEXPORT jobject JNICALL Java_com_example_admin_testjni_NativeLib_passObjectArrayToJNI(JNIEnv *env, jobject thiz, jobjectArray jArr)
+{
+    jsize arrSize = env->GetArrayLength(jArr);
+
+    for(int i = 0; i < arrSize; i++)    {
+
+        jobject jPoint = env->GetObjectArrayElement(jArr, i);
+        jclass cls = env->GetObjectClass(jPoint);
+
+        jfieldID xID = env->GetFieldID(cls, "x", "I");
+        jfieldID yID = env->GetFieldID(cls, "y", "I");
+
+        int x = env->GetIntField(jPoint, xID);
+        int y = env->GetIntField(jPoint, yID);
+
+        __android_log_print(ANDROID_LOG_DEBUG, "", "x value = %d", x);
+        __android_log_print(ANDROID_LOG_DEBUG, "", "y value = %d", y);
+        __android_log_print(ANDROID_LOG_DEBUG, "", "========================");
+    }
+}
