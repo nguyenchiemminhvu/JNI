@@ -19,4 +19,5 @@ public class NativeLib {
     public static native Object returnObjectToJava();
 
     public static native void passObjectArrayToJNI(Point2D [] arr);
+    public static native Point2D[] returnPoints();
 }

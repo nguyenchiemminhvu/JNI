@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
         textView = (TextView) this.findViewById(R.id.text);
 
-        passObjectArrayToJNI();
+        getObjectsFromJNI();
     }
 
     public void initNativeLib()
@@ -54,5 +54,20 @@ public class MainActivity extends AppCompatActivity {
         };
 
         NativeLib.passObjectArrayToJNI(points);
+    }
+
+    public void getObjectsFromJNI()
+    {
+        Point2D[] points = NativeLib.returnPoints();
+
+        if(points == null)
+            return;
+
+        for(Point2D p : points)
+        {
+            Log.i("", "x value = " + p.x);
+            Log.i("", "y value = " + p.y);
+            Log.i("", "=========================");
+        }
     }
 }

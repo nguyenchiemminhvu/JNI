@@ -5,7 +5,31 @@
 #include <jni.h>
 #include <android/log.h>
 
+struct __Point
+{
+    int x;
+    int y;
 
+    __Point()
+    {
+        x = y = 0;
+    }
+
+    __Point(int _x, int _y)
+    {
+        x = _x;
+        y = _y;
+    }
+};
+
+struct __JNI_Point
+{
+    jclass cls;
+    jmethodID constructorID;
+
+    jfieldID xID;
+    jfieldID yID;
+};
 
 JavaVM *javaVM;
 const char * className;
@@ -99,7 +123,7 @@ JNIEXPORT jobject JNICALL Java_com_example_admin_testjni_NativeLib_returnObjectT
 }
 
 extern "C"
-JNIEXPORT jobject JNICALL Java_com_example_admin_testjni_NativeLib_passObjectArrayToJNI(JNIEnv *env, jobject thiz, jobjectArray jArr)
+JNIEXPORT void JNICALL Java_com_example_admin_testjni_NativeLib_passObjectArrayToJNI(JNIEnv *env, jobject thiz, jobjectArray jArr)
 {
     jsize arrSize = env->GetArrayLength(jArr);
 
@@ -118,4 +142,33 @@ JNIEXPORT jobject JNICALL Java_com_example_admin_testjni_NativeLib_passObjectArr
         __android_log_print(ANDROID_LOG_DEBUG, "", "y value = %d", y);
         __android_log_print(ANDROID_LOG_DEBUG, "", "========================");
     }
+}
+
+extern "C"
+JNIEXPORT jobjectArray JNICALL Java_com_example_admin_testjni_NativeLib_returnPoints(JNIEnv *env, jobject thiz)
+{
+    jobjectArray arr;
+
+    __JNI_Point javaPoint;
+    javaPoint.cls = env->FindClass("com/example/admin/testjni/Point2D");
+    javaPoint.constructorID = env->GetMethodID(javaPoint.cls, "<init>", "()V");
+    javaPoint.xID = env->GetFieldID(javaPoint.cls, "x", "I");
+    javaPoint.yID = env->GetFieldID(javaPoint.cls, "y", "I");
+
+    __Point points[3];
+    int size = 3;
+
+    arr = env->NewObjectArray(size, javaPoint.cls, 0);
+
+    for(int i = 0; i < size; i++)
+    {
+        jobject obj = env->NewObject(javaPoint.cls, javaPoint.constructorID);
+
+        env->SetIntField(obj, javaPoint.xID, (jint)i + 1);
+        env->SetIntField(obj, javaPoint.yID, (jint)i + 2);
+
+        env->SetObjectArrayElement(arr, i, obj);
+    }
+
+    return arr;
 }
